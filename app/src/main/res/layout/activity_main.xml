@@ -53,7 +53,7 @@
                 android:layout_height="80dp"
                 android:layout_marginEnd="16dp"
                 android:layout_weight="1"
-                android:background="@color/secondary"
+                android:background="@drawable/button_selector"
                 android:src="@drawable/ic_gallery" />
 
             <ImageButton
@@ -62,7 +62,7 @@
                 android:layout_height="80dp"
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
-                android:background="@color/secondary"
+                android:background="@drawable/button_selector"
                 android:src="@drawable/ic_camera" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
