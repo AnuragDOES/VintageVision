@@ -69,9 +69,5 @@ class MainActivity : AppCompatActivity() {
                 galleryPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
             }
         }
-
-
     }
-
-
 }
