@@ -28,14 +28,21 @@ class MainActivity : AppCompatActivity() {
                 val bundle : Bundle = result.data!!.extras!!
                 imageBitmap = bundle.get("data") as Bitmap
                 binding.ivTest.setImageBitmap(imageBitmap)
+            } else {
+                Toast.makeText(this, "Maybe you forgot to click a picture?", Toast.LENGTH_LONG).show()
             }
         }
         val galleryIntent = registerForActivityResult(
             ActivityResultContracts.GetContent()
         ) {result->
-            val source = ImageDecoder.createSource(contentResolver, result!!)
-            imageBitmap = ImageDecoder.decodeBitmap(source)
-            binding.ivTest.setImageBitmap(imageBitmap)
+            if (result != null){
+                val source = ImageDecoder.createSource(contentResolver, result)
+                imageBitmap = ImageDecoder.decodeBitmap(source)
+                binding.ivTest.setImageBitmap(imageBitmap)
+            } else {
+                Toast.makeText(this, "No Image? 👉👈", Toast.LENGTH_SHORT).show()
+            }
+
         }
 
         val cameraPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission())
