@@ -45,7 +45,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnGallery.setOnClickListener {
-            TODO("Gallery Intent")
+            //TODO("Gallery Intent")
+            Toast.makeText(this, "Brother you have to implement this first", Toast.LENGTH_SHORT).show()
         }
         if (!allPermissionsGranted()) {
             requestPermission()
