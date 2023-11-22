@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">VintageVision</string>
+    <string name="takePicture">Take Picture</string>
 
 </resources>

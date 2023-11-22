@@ -1,5 +1,6 @@
 package com.anurag.vintagevision
 
+import android.content.ContentValues.TAG
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Build.VERSION
@@ -7,6 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.core.content.ContextCompat
 import com.anurag.vintagevision.databinding.ActivityModelPreviewBinding
 
 class ModelPreviewActivity : AppCompatActivity() {
@@ -16,22 +21,42 @@ class ModelPreviewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityModelPreviewBinding.inflate(layoutInflater)
 
-
-
-        val imageBitmap = if (VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra("imageBitmap", Bitmap::class.java)
-        } else {
-            intent.getParcelableExtra<Bitmap>("imageBitmap")
-        }
-
-//        if (imageBitmap != null) {
-//            binding.tempImage.setImageBitmap(imageBitmap)
-//        } else {
-//            // Log an error and handle the case where imageBitmap is null
-//            // This may indicate an issue in how it's being passed or received
-//            Log.e("ModelPreviewActivity", "Received imageBitmap is null.")
-//            Toast.makeText(this, "Error: Received image is null.", Toast.LENGTH_SHORT).show()
-//        }
         setContentView(binding.root)
+
+        startCamera()
     }
+
+    private fun startCamera() {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+
+        cameraProviderFuture.addListener({
+            // Used to bind the lifecycle of cameras to the lifecycle owner
+            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+
+            // Preview
+            val preview = Preview.Builder()
+                .build()
+                .also {
+                    it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
+                }
+
+            // Select back camera as a default
+            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
+            try {
+                // Unbind use cases before rebinding
+                cameraProvider.unbindAll()
+
+                // Bind use cases to camera
+                cameraProvider.bindToLifecycle(
+                    this, cameraSelector, preview)
+
+            } catch(exc: Exception) {
+                Log.e(TAG, "Use case binding failed", exc)
+            }
+
+        }, ContextCompat.getMainExecutor(this))
+    }
+
+    companion object
 }

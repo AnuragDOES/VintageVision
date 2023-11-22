@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.anurag.vintagevision.databinding.ActivityMainBinding
 import android.Manifest
+import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -16,18 +17,24 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.Executor
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var imageBitmap : Bitmap
     private lateinit var binding : ActivityMainBinding
-    val photoFile : File? = null
-    //val photoFile : File = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "VintageVision/image.jpg")
+    private var imageCapture: ImageCapture? = null
+    private lateinit var cameraExecutor: ExecutorService
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,89 +42,84 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        val cameraIntent = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-            result->
-            if(result.resultCode == RESULT_OK){
-                //TODO("This is to be implemented in a different way")
-                val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                if (takePictureIntent.resolveActivity(packageManager) != null) {
-                    val photoFile = try {
-                        createImageFile()
-                    } finally {
-                        Toast.makeText(this, "done", Toast.LENGTH_LONG).show()
-                    }
-                }
-                Toast.makeText(this, "The capture was successful", Toast.LENGTH_LONG).show()
-                //binding.ivTest.setImageBitmap(imageBitmap)
-                //navigateToModelPreview()
-            } else {
-                Toast.makeText(this, "Maybe you forgot to click a picture?", Toast.LENGTH_LONG).show()
-            }
+        binding.btnCamera.setOnClickListener() {
+            navigateToModelPreview()
         }
-        val galleryIntent = registerForActivityResult(ActivityResultContracts.GetContent()) { result ->
-            if (result != null) {
-                try {
-                    TODO("This is to be implemented in a different way")
-                    navigateToModelPreview()
-                } catch (e: IOException) {
-                    Log.e("MainActivity", "Error decoding bitmap from gallery: ${e.message}")
-                    Toast.makeText(this, "Error decoding image from gallery", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                Toast.makeText(this, "No Image? 👉👈", Toast.LENGTH_SHORT).show()
-            }
+        if (!allPermissionsGranted()) {
+            requestPermission()
         }
 
 
-        val cameraPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission())
-        {isGranted:Boolean->
-            if(isGranted){
-                cameraIntent.launch(
-                    Intent(
-                        "android.media.action.IMAGE_CAPTURE"
-                    )
-                )
-            }else{
-                Toast.makeText(this,"Camera Permission Required.",Toast.LENGTH_LONG).show()
-            }
-        }
-        val galleryPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission())
-        {isGranted:Boolean->
-            if(isGranted){
-                galleryIntent.launch("image/*")
-            }else{
-                Toast.makeText(this,"Gallery Permission Required.",Toast.LENGTH_LONG).show()
-            }
-        }
+        //binding.btnCamera.setOnClickListener{ takePhoto() }
 
-
-        binding.btnCamera.setOnClickListener {
-            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-        }
-
-        binding.btnGallery.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                galleryPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
-            }
-        }
+        //cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
-    private fun navigateToModelPreview() {
+    private val activityResultLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions())
+        { permissions ->
+            // Handle Permission granted/rejected
+            var permissionGranted = true
+            permissions.entries.forEach {
+                if (it.key in REQUIRED_PERMISSIONS && !it.value)
+                    permissionGranted = false
+            }
+            if (!permissionGranted) {
+                Toast.makeText(baseContext,
+                    "Permission request denied",
+                    Toast.LENGTH_SHORT).show()
+            } else {
+                initApp()
+            }
+        }
+
+
+
+    private fun takePhoto() {
+        TODO("Not yet implemented")
+    }
+
+    private fun initApp() {
+        //TODO("Not yet implemented")
+
+
+    }
+
+    private fun requestPermission() {
+        //TODO("Not yet implemented")
+        activityResultLauncher.launch(REQUIRED_PERMISSIONS)
+    }
+
+    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
+        ContextCompat.checkSelfPermission(
+            baseContext, it) == PackageManager.PERMISSION_GRANTED
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        cameraExecutor.shutdown()
+    }
+    companion object {
+        private val REQUIRED_PERMISSIONS =
+            mutableListOf (
+                Manifest.permission.CAMERA
+            ).apply {
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+                    add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                }
+            }.toTypedArray()
+    }
+
+    private fun navigateToModelPreview(imageStuff: Bitmap? = null) {
         val intent = Intent(this, ModelPreviewActivity::class.java)
-        intent.putExtra("imageBitmap", imageBitmap)
+        if (imageStuff != null) {
+            intent.putExtra("imageStuff", imageStuff)
+        }
         startActivity(intent)
     }
 
-    private fun createImageFile(): Any {
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
 
-        return File.createTempFile(
-            "VintageVision/JPEG_${timeStamp}_", /* prefix */
-            ".jpg", /* suffix */
-            storageDir /* directory */
-        )
-    }
 
 
 }
