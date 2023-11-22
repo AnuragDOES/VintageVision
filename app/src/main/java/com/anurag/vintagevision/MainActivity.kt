@@ -33,8 +33,6 @@ import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding : ActivityMainBinding
-    private var imageCapture: ImageCapture? = null
-    private lateinit var cameraExecutor: ExecutorService
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,14 +43,14 @@ class MainActivity : AppCompatActivity() {
         binding.btnCamera.setOnClickListener() {
             navigateToModelPreview()
         }
+
+        binding.btnGallery.setOnClickListener {
+            TODO("Gallery Intent")
+        }
         if (!allPermissionsGranted()) {
             requestPermission()
         }
 
-
-        //binding.btnCamera.setOnClickListener{ takePhoto() }
-
-        //cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
     private val activityResultLauncher =
@@ -69,25 +67,11 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(baseContext,
                     "Permission request denied",
                     Toast.LENGTH_SHORT).show()
-            } else {
-                initApp()
             }
         }
 
 
-
-    private fun takePhoto() {
-        TODO("Not yet implemented")
-    }
-
-    private fun initApp() {
-        //TODO("Not yet implemented")
-
-
-    }
-
     private fun requestPermission() {
-        //TODO("Not yet implemented")
         activityResultLauncher.launch(REQUIRED_PERMISSIONS)
     }
 
@@ -96,10 +80,7 @@ class MainActivity : AppCompatActivity() {
             baseContext, it) == PackageManager.PERMISSION_GRANTED
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        cameraExecutor.shutdown()
-    }
+
     companion object {
         private val REQUIRED_PERMISSIONS =
             mutableListOf (
