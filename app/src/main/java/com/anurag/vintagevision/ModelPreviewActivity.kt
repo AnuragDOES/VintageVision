@@ -2,6 +2,7 @@ package com.anurag.vintagevision
 
 import android.content.ContentValues
 import android.content.ContentValues.TAG
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Build.VERSION
@@ -79,12 +80,18 @@ class ModelPreviewActivity : AppCompatActivity() {
                     val msg = "Photo capture succeeded: ${output.savedUri}"
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
+                    navigateToEnhanceActivity()
                     //Toast.makeText(this, "success")
                 }
             }
         )
 
 
+    }
+
+    private fun navigateToEnhanceActivity() {
+        val intent = Intent(this, EnhanceActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onDestroy() {
