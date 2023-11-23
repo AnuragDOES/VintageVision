@@ -13,6 +13,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/secondary">
+
+        <ImageView
+            android:id="@+id/ivDemo2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:srcCompat="@tools:sample/avatars" />
     </androidx.camera.view.PreviewView>
 
 
