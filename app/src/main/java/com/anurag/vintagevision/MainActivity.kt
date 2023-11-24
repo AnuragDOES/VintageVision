@@ -45,9 +45,20 @@ class MainActivity : AppCompatActivity() {
         binding.btnCamera.setOnClickListener() {
             navigateToModelPreview()
         }
-
+        val galleryIntent = registerForActivityResult(ActivityResultContracts.GetContent()) { result ->
+            if (result != null) {
+                try {
+                    photoPicker(result)
+                } catch (e: IOException) {
+                    Log.e("MainActivity", "Error decoding bitmap from gallery: ${e.message}")
+                    Toast.makeText(this, "Error decoding image from gallery", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(this, "No Image? 👉👈", Toast.LENGTH_SHORT).show()
+            }
+        }
         binding.btnGallery.setOnClickListener {
-            photoPicker()
+            galleryIntent.launch("image/*")
             }
         if (!allPermissionsGranted()) {
             requestPermission()
@@ -71,8 +82,7 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT).show()
             }
         }
-    private fun photoPicker(){
-
+    private fun photoPicker(uri: Uri?){
                 val intent = Intent(this,ImageViewActivity::class.java)
                 intent.putExtra("galleryUri",uri.toString())
                 startActivity(intent)
