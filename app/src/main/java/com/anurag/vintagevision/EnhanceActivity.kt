@@ -12,6 +12,12 @@ class EnhanceActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEnhanceBinding.inflate(layoutInflater)
+
+
+        val uriString = intent.getStringExtra("outputPath")
+
+        binding.sample.text = uriString
+
         setContentView(binding.root)
 
 //        image = getImage()

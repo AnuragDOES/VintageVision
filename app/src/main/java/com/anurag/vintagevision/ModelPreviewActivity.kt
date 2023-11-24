@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Build
 import android.os.Build.VERSION
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +14,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCapture.OutputFileResults
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -80,7 +82,7 @@ class ModelPreviewActivity : AppCompatActivity() {
                     val msg = "Photo capture succeeded: ${output.savedUri}"
                     //Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
-                    navigateToEnhanceActivity()
+                    navigateToEnhanceActivity(output.savedUri)
                     //Toast.makeText(this, "success")
                 }
             }
@@ -89,8 +91,11 @@ class ModelPreviewActivity : AppCompatActivity() {
 
     }
 
-    private fun navigateToEnhanceActivity() {
+    private fun navigateToEnhanceActivity(outputUri: Uri?) {
         val intent = Intent(this, EnhanceActivity::class.java)
+        if (outputUri != null){
+            intent.putExtra("outputPath", outputUri)
+        }
         startActivity(intent)
     }
 
