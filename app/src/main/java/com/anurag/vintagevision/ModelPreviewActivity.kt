@@ -82,35 +82,17 @@ class ModelPreviewActivity : AppCompatActivity() {
                     val msg = "Photo capture succeeded: ${output.savedUri}"
                     //Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
-                    navigateToEnhanceActivity(output.savedUri)
+                    navigateToImageViewActivity(output.savedUri)
                 }
             }
         )
+    }
 
-//        imageCapture.takePicture(
-//            ContextCompat.getMainExecutor(this),
-//            object : ImageCapture.OnImageCapturedCallback(){
-//                override fun onCaptureSuccess(imageProxy: ImageProxy) {
-//                    val planeBuffer = imageProxy.planes[0].buffer
-//                    val bytes = ByteArray(planeBuffer.remaining())
-//                    planeBuffer.get(bytes)
-//                    navigateToImageViewActivity(bytes)
-//                }
-//            }
-//        )
-    }
-    }
-    private fun navigateToImageViewActivity(bytes: ByteArray) {
-        val intent = Intent(this, ImageViewActivity::class.java)
-        intent.putExtra("cameraBytes", bytes)
-        Toast.makeText(this, "$bytes", Toast.LENGTH_LONG).show()
-        startActivity(intent)
-    }
-    private fun navigateToEnhanceActivity(outputUri: Uri?) {
+    private fun navigateToImageViewActivity(outputUri: Uri?) {
         val intent = Intent(this, ImageViewActivity::class.java)
 
         if (outputUri != null){
-            intent.putExtra("cameraPic", outputUri.toString())
+            intent.putExtra("cameraUri", outputUri.toString())
             startActivity(intent)
         }
 

@@ -11,11 +11,13 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
+import android.media.Image
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.annotation.RequiresApi
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -45,9 +47,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnGallery.setOnClickListener {
-            //TODO("Gallery Intent")
-            Toast.makeText(this, "Brother you have to implement this first", Toast.LENGTH_SHORT).show()
-        }
+            photoPicker()
+            }
         if (!allPermissionsGranted()) {
             requestPermission()
         }
@@ -70,6 +71,14 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT).show()
             }
         }
+    private fun photoPicker(){
+
+                val intent = Intent(this,ImageViewActivity::class.java)
+                intent.putExtra("galleryUri",uri.toString())
+                startActivity(intent)
+        }
+
+
 
 
     private fun requestPermission() {
@@ -89,6 +98,9 @@ class MainActivity : AppCompatActivity() {
             ).apply {
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
                     add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+                    add(Manifest.permission.READ_MEDIA_IMAGES)
                 }
             }.toTypedArray()
     }
