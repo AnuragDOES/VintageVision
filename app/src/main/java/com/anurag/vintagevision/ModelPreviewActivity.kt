@@ -16,6 +16,7 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCapture.OutputFileResults
 import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
@@ -76,27 +77,30 @@ class ModelPreviewActivity : AppCompatActivity() {
                 override fun onError(exc: ImageCaptureException) {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
                 }
-
                 override fun
                         onImageSaved(output: OutputFileResults){
                     val msg = "Photo capture succeeded: ${output.savedUri}"
                     //Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
                     navigateToEnhanceActivity(output.savedUri)
-                    //Toast.makeText(this, "success")
                 }
             }
         )
+
 
 
     }
 
     private fun navigateToEnhanceActivity(outputUri: Uri?) {
         val intent = Intent(this, ImageViewActivity::class.java)
+
         if (outputUri != null){
-            intent.putExtra("outputPath", outputUri)
+            intent.putExtra("cameraPic", outputUri.toString())
+            startActivity(intent)
         }
-        startActivity(intent)
+
+
+
     }
 
     override fun onDestroy() {
