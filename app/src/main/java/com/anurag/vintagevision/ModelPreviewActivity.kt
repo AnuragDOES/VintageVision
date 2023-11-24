@@ -87,10 +87,25 @@ class ModelPreviewActivity : AppCompatActivity() {
             }
         )
 
-
-
+//        imageCapture.takePicture(
+//            ContextCompat.getMainExecutor(this),
+//            object : ImageCapture.OnImageCapturedCallback(){
+//                override fun onCaptureSuccess(imageProxy: ImageProxy) {
+//                    val planeBuffer = imageProxy.planes[0].buffer
+//                    val bytes = ByteArray(planeBuffer.remaining())
+//                    planeBuffer.get(bytes)
+//                    navigateToImageViewActivity(bytes)
+//                }
+//            }
+//        )
     }
-
+    }
+    private fun navigateToImageViewActivity(bytes: ByteArray) {
+        val intent = Intent(this, ImageViewActivity::class.java)
+        intent.putExtra("cameraBytes", bytes)
+        Toast.makeText(this, "$bytes", Toast.LENGTH_LONG).show()
+        startActivity(intent)
+    }
     private fun navigateToEnhanceActivity(outputUri: Uri?) {
         val intent = Intent(this, ImageViewActivity::class.java)
 
