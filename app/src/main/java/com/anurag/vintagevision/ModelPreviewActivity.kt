@@ -55,7 +55,7 @@ class ModelPreviewActivity : AppCompatActivity() {
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, name)
             put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+            if(VERSION.SDK_INT > Build.VERSION_CODES.P) {
                 put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Vintage Vision")
             }
         }
@@ -78,7 +78,7 @@ class ModelPreviewActivity : AppCompatActivity() {
                 }
 
                 override fun
-                        onImageSaved(output: ImageCapture.OutputFileResults){
+                        onImageSaved(output: OutputFileResults){
                     val msg = "Photo capture succeeded: ${output.savedUri}"
                     //Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
@@ -92,7 +92,7 @@ class ModelPreviewActivity : AppCompatActivity() {
     }
 
     private fun navigateToEnhanceActivity(outputUri: Uri?) {
-        val intent = Intent(this, EnhanceActivity::class.java)
+        val intent = Intent(this, ImageViewActivity::class.java)
         if (outputUri != null){
             intent.putExtra("outputPath", outputUri)
         }
