@@ -9,6 +9,8 @@ import android.provider.MediaStore
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.anurag.vintagevision.databinding.ActivityImageViewBinding
+import com.anurag.vintagevision.ml.AutoModel1
+import org.tensorflow.lite.support.image.TensorImage
 
 
 class ImageViewActivity : AppCompatActivity() {
@@ -49,7 +51,7 @@ class ImageViewActivity : AppCompatActivity() {
     }
 
     private fun getBitmapFromURI(context: Context, oldPicUri: Uri?): Bitmap? {
-        val contextResolver: ContentResolver = context.contentResolver
+        val contentResolver: ContentResolver = context.contentResolver
         try {
             return MediaStore.Images.Media.getBitmap(contentResolver, oldPicUri)
         } catch (e: Exception) {
@@ -64,7 +66,9 @@ class ImageViewActivity : AppCompatActivity() {
         if (imageBitmap != null) {
             scaledImage = scaleBitmap()
         }
+        //TODO("Model")
         return scaledImage
+
     }
 
     private fun scaleBitmap(): Bitmap? {
@@ -72,8 +76,8 @@ class ImageViewActivity : AppCompatActivity() {
         val scaleHeightFactor : Float
         val ratio = imageBitmap!!.height.toFloat() / imageBitmap!!.width.toFloat()
         if (imageBitmap != null) {
-            scaleWidthFactor = (200).toFloat()
-            scaleHeightFactor = scaleWidthFactor * ratio
+            scaleWidthFactor = (50).toFloat()
+            scaleHeightFactor = (50).toFloat() //scaleWidthFactor * ratio
         } else {
             return null
         }
@@ -86,9 +90,9 @@ class ImageViewActivity : AppCompatActivity() {
         super.onStop()
 
         if(cameraUriString != null) {
-            Toast.makeText(this,"pic deleted",Toast.LENGTH_LONG).show()
             val contentResolver: ContentResolver = applicationContext.contentResolver
             contentResolver.delete(Uri.parse(cameraUriString),null,null)
+            Toast.makeText(this,"pic deleted",Toast.LENGTH_LONG).show()
         }
         cameraUriString = null
         galleryUriString = null
